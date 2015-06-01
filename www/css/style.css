@@ -8,3 +8,7 @@ map {
 .scroll {
   height: 100%;
 }
+
+.search {
+	top: -7px;
+}
