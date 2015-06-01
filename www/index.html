@@ -29,7 +29,14 @@
   <body ng-app="starter" ng-controller="MapCtrl">
     <ion-header-bar class="bar-stable">
     <img src="img/f.png" style="height:47px;">
-      <h1 class="title">Map</h1>
+      <div id="search-bar" style="height:47px;">
+    <div class="item item-input-inset">
+      <label class="item-input-wrapper" id="search-input">
+        <i class="icon ion-search placeholder-icon"></i>
+        <input type="text" placeholder="Search" ng-model="query" ng-change="search()">
+      </label>
+    </div>
+  </div>
     </ion-header-bar>
 
     <ion-content scroll="false">
