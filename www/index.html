@@ -27,16 +27,17 @@
   </head>
 
   <body ng-app="starter" ng-controller="MapCtrl">
-    <ion-header-bar class="bar-stable">
+    <ion-header-bar class="bar-energized">
     <img src="img/f.png" style="height:47px;">
-      <div id="search-bar" style="height:47px;">
-    <div class="item item-input-inset">
-      <label class="item-input-wrapper" id="search-input">
+      <div id="search-bar">
+    <div class="item item-input">
+      <label class="item-input-wrapper" id="search-input" style="height:27px;">
         <i class="icon ion-search placeholder-icon"></i>
         <input type="text" placeholder="Search" ng-model="query" ng-change="search()">
       </label>
     </div>
   </div>
+  <button class="icon ion-navicon button button-clear"></button>
     </ion-header-bar>
 
     <ion-content scroll="false">
