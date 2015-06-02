@@ -1,4 +1,5 @@
 /* Empty. Add your own CSS if you like */
+.clearfix {clear: both;}
 
 map {
   display: block;
@@ -17,3 +18,5 @@ map {
 	left: 28px;
 	width: 50px;
 }
+
+.menu-list {position: absolute; top: 40px; right: 83px;}

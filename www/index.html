@@ -15,7 +15,7 @@
     <!-- ionic/angularjs js -->
     <script src="lib/ionic/js/ionic.bundle.js"></script>
 
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB16sGmIekuGIvYOfNoW9T44377IU2d2Es&sensor=true"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB16sGmIekuGIvYOfNoW9T44377IU2d2Es&sensor=true&libraries=places"></script>
 
     <!-- cordova script (this will be a 404 during development) -->
     <script src="cordova.js"></script>
@@ -28,20 +28,26 @@
 
   <body ng-app="starter" ng-controller="MapCtrl">
     <ion-header-bar class="bar-energized">
-    <img src="img/f.png" style="height:47px;">
-      <div id="search-bar" style="width: 200px;" "height:47px;">
-    <div class="item-input search">
-      <label class="item-input-wrapper" id="search-input">
-        <i class="icon ion-search placeholder-icon"></i>
-        <input type="text" placeholder="Search" ng-model="query" ng-change="search()">
-      </label>
-    </div>
-  </div>
-  <button class="icon ion-navicon button button-clear extra"></button>
+      <img src="img/f.png" style="height:47px;">
+      <div id="search-bar" style="height:47px;">
+        <div class="item-input search">
+          <label class="item-input-wrapper" id="search-input">
+            <i class="icon ion-search placeholder-icon"></i>
+            <input type="text" id="pac-input" placeholder="Search" ng-model="query" ng-change="search()">
+          </label>
+        </div>
+      </div>
+      <button class="icon ion-navicon button button-clear extra" ng-click="toggleMenu()"></button>
+      <ul ng-show="menuView" class="menu-list list">
+        <li class="item">deals</li>
+        <li class="item">strains</li>
+        <li class="item">specials</li>
+        <li class="item">veteran discounts</li>
+      </ul>
     </ion-header-bar>
 
     <ion-content scroll="false">
-      <map on-create="mapCreated(map)"></map>
+      <map id="map-canvas" on-create="mapCreated(map)"></map>
     </ion-content>
 
     <ion-footer-bar class="bar-balanced">
