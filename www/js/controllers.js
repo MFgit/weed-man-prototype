@@ -64,11 +64,12 @@ angular.module('starter.controllers', [])
     });
     /** End Autocomplete function on Google map location search */
 
-    $scope.selectedRegion = map.center;
-
+    
     $scope.map = map;
     
-    $scope.centerOnMe
+    $scope.centerOnMe();
+
+    $scope.selectedRegion = $scope.map.center;
 
     $scope.getDestribution();
   };
