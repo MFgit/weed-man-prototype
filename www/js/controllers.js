@@ -64,8 +64,13 @@ angular.module('starter.controllers', [])
     });
     /** End Autocomplete function on Google map location search */
 
-    $scope.map = map;
     $scope.selectedRegion = map.center;
+
+    $scope.map = map;
+    
+    //$scope.centerOnMe
+
+    $scope.getDestribution();
   };
 
   $scope.centerOnMe = function () {
@@ -95,19 +100,29 @@ angular.module('starter.controllers', [])
     $scope.menuView = false;
 
     clearMarkers($scope.markers);
-
-    if ($scope.selector == "strains") {
-      leaflyService.getStrains().then(function (response){
-        console.log("service success");
-      });
+    if ($scope.selector) {
+      if ($scope.selector == "strains") {
+        leaflyService.getStrains().then(function (response){
+          console.log("service success");
+        });
+      }
+      else {
+        leaflyService.getLocations($scope.selectedRegion, $scope.selector).then(function (response) {
+          if (response.data.stores) {
+            markRestrictions(response.data.stores);
+          }
+        });
+      }
     }
     else {
-      leaflyService.getLocations($scope.selectedRegion, $scope.selector).then(function (response) {
+      leaflyService.getLocations($scope.selectedRegion).then(function (response) {
         if (response.data.stores) {
           markRestrictions(response.data.stores);
         }
       });
     }
+
+      
   };
 
   function placeMark(map, position, markIcon) {

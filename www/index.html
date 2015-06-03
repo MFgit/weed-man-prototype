@@ -37,12 +37,11 @@
           </label>
         </div>
       </div>
-      <button class="icon ion-navicon button button-clear extra" ng-click="toggleMenu()"></button>
+      <button class="icon ion-navicon button button-clear extra" ng-click="toggleMenu()" ng-model="selector"></button>
       <ul ng-show="menuView" class="menu-list list">
         <li class="item" ng-click="selector='deals';getDestribution()">deals</li>
-        <li class="item" ng-click="selector='strains';getDestribution()">strains</li>
-        <li class="item" ng-click="selector='specials';getDestribution()">specials</li>
         <li class="item" ng-click="selector='veteranDiscount';getDestribution()">veteran discounts</li>
+        <li class="item" ng-click="selector='strains';getDestribution()">strains</li>
       </ul>
     </ion-header-bar>
 
