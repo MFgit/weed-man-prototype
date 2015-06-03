@@ -127,10 +127,12 @@ angular.module('starter.controllers', [])
   function markRestrictions(locations) {
     // Loop through our array of markers & place each one on the map 
     if (locations) {
-       var bounds = new google.maps.LatLngBounds();
-       var markers = [];
-
+      var bounds = new google.maps.LatLngBounds();
+      var markers = [];
+      var infoWindow = new google.maps.InfoWindow();
+                
       locations.forEach(function(item) {
+        infoWindow.close();
         var position = new google.maps.LatLng(item.latitude, item.longitude);
         bounds.extend(position);
 
@@ -140,7 +142,6 @@ angular.module('starter.controllers', [])
         // Allow each marker to have an info window
         google.maps.event.addListener(marker, 'click', (function(marker) {
             return function() {
-                var infoWindow = new google.maps.InfoWindow();
                 var infoContent = '<img src="' + item.logo + '" width="50" style="float: left" />';
                 infoContent += '<div style="float:left">\
                                   <h6 style="margin-top:0">' + item.name + '</h6>\
