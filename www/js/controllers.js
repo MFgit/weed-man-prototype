@@ -4,30 +4,29 @@ angular.module('starter.controllers', [])
   $scope.menuView = false;
 
   $scope.mapCreated = function(map) {
+    
     var mapOptions = {
-          center: new google.maps.LatLng(43.07493,-89.381388),
-          zoom: 16,
+          center: new google.maps.LatLng(37.7749295, -122.41941550000001),
+          zoom: 15,
           mapTypeId: google.maps.MapTypeId.ROADMAP
         };
-    var map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
-
+    
     var input = /** @type {HTMLInputElement} */(document.getElementById('pac-input'));
 
     var autocomplete = new google.maps.places.Autocomplete(input);
     autocomplete.bindTo('bounds', map);
 
     var infowindow = new google.maps.InfoWindow();
-    var marker = new google.maps.Marker({
-          map: map,
-          anchorPoint: new google.maps.Point(0, -29)
-        });
 
-    marker.setPosition(mapOptions.center);
-    marker.setVisible(true);
+    var marker = placeMark(map, mapOptions.center);
 
+    /** Autocomplete function on Google map location search */
     google.maps.event.addListener(autocomplete, 'place_changed', function() {
       infowindow.close();
       marker.setVisible(false);
+
+      clearMarkers($scope.markers);
+
       var place = autocomplete.getPlace();
       if (!place.geometry) {
         window.alert("Autocomplete's returned place contains no geometry");
@@ -39,11 +38,15 @@ angular.module('starter.controllers', [])
         map.fitBounds(place.geometry.viewport);
       } else {
         map.setCenter(place.geometry.location);
-        map.setZoom(17);  // Why 17? Because it looks good.
+        map.setZoom(11);  // Why 17? Because it looks good.
       }
-      
+
       marker.setPosition(place.geometry.location);
       marker.setVisible(true);
+
+      $scope.selectedRegion = place.geometry.location;
+      
+      if ($scope.selector) $scope.getRestriction();
 
       var address = '';
       if (place.address_components) {
@@ -56,13 +59,16 @@ angular.module('starter.controllers', [])
 
       infowindow.setContent('<div><strong>' + place.name + '</strong><br>' + address);
       infowindow.open(map, marker);
+
+      $scope.map = map;
     });
+    /** End Autocomplete function on Google map location search */
 
     $scope.map = map;
+    $scope.selectedRegion = map.center;
   };
 
   $scope.centerOnMe = function () {
-    console.log("Centering");
     if (!$scope.map) {
       return;
     }
@@ -73,7 +79,6 @@ angular.module('starter.controllers', [])
     });
 
     navigator.geolocation.getCurrentPosition(function (pos) {
-      console.log('Got pos', pos);
       $scope.map.setCenter(new google.maps.LatLng(pos.coords.latitude, pos.coords.longitude));
       $scope.loading.hide();
     }, function (error) {
@@ -86,13 +91,94 @@ angular.module('starter.controllers', [])
     $scope.menuView = !$scope.menuView;
   };
 
-  leaflyService.getStrains().then(function(response){
-    console.log("service success");
-  });
+  $scope.getRestriction = function () {
+    $scope.menuView = false;
 
-  leaflyService.getLocations().then(function (response) {
-    console.log("get locations");
-  });
+    clearMarkers($scope.markers);
+
+    if ($scope.selector == "strains") {
+      leaflyService.getStrains().then(function (response){
+        console.log("service success");
+      });
+    }
+    else {
+      leaflyService.getLocations($scope.selectedRegion, $scope.selector).then(function (response) {
+        if (response.data.stores) {
+          markRestrictions(response.data.stores);
+        }
+      });
+    }
+  };
+
+  function placeMark(map, position, markIcon) {
+    var marker = new google.maps.Marker({
+          map: map,
+          position: position,
+          visible: true
+        });
+
+    if (markIcon) {
+      marker.setIcon(markIcon);
+    }
+
+    return marker;
+  }
+
+  function markRestrictions(locations) {
+    // Loop through our array of markers & place each one on the map 
+    if (locations) {
+       var bounds = new google.maps.LatLngBounds();
+       var markers = [];
+
+      locations.forEach(function(item) {
+        var position = new google.maps.LatLng(item.latitude, item.longitude);
+        bounds.extend(position);
+
+        var marker = placeMark($scope.map, position, "http://maps.google.com/mapfiles/ms/icons/blue-dot.png");
+        markers.push(marker);
+        
+        // Allow each marker to have an info window
+        google.maps.event.addListener(marker, 'click', (function(marker) {
+            return function() {
+                var infoWindow = new google.maps.InfoWindow();
+                var infoContent = '<img src="' + item.logo + '" width="50" style="float: left" />';
+                infoContent += '<div style="float:left">\
+                                  <h6 style="margin-top:0">' + item.name + '</h6>\
+                                  <p style="margin:0">' + item.address + ', ' + item.locationLabel + '</p>\
+                                  <a href="tel:' + item.phone + '">' + item.phone + '</a>\
+                                </div>';
+                infoWindow.setContent(infoContent);
+                infoWindow.open($scope.map, marker);
+            }
+        })(marker, item.id));
+
+        // Automatically center the map fitting all markers on the screen
+        $scope.map.fitBounds(bounds);
+      });
+
+      // Override our map zoom level once our fitBounds function runs (Make sure it only runs once)
+      var boundsListener = google.maps.event.addListener(($scope.map), 'bounds_changed', function(event) {
+          this.setZoom(11);
+          google.maps.event.removeListener(boundsListener);
+      });
+
+      $scope.markers = markers;
+    }
+
+    $scope.map.setCenter($scope.selectedRegion)
+  }
+
+  function clearMarkers(markers) {
+    if (markers) {
+      markers.forEach(function(marker) {
+        marker.setMap(null);
+        marker.setVisible(false);
+      });
+
+      $scope.markers = [];
+    }
+  }
+
 })
 
 .factory('leaflyService', function($http) {
@@ -103,19 +189,23 @@ angular.module('starter.controllers', [])
     getStrains: function () {
       return $http.post('http://data.leafly.com/strains', {
         "Page":0,
-        "Take":10
+        "Take":50
       })
     },
 
-    getLocations: function () {
-      return $http.post('http://data.leafly.com/locations', {
-        "page":0, 
-        "take":10, 
-        "latitude": 33.749,
-        "longitude": -117.874,
-        "delivery":"true",
-        "veterandiscount":"true"
-      })
+    getLocations: function (position, selector) {
+      var params = "page=0&take=50"
+
+      if (position && position.lat() && position.lng()){
+        params += "&latitude=" + position.lat() + "&longitude=" + position.lng();
+      }
+      
+      if (selector) {
+        params += "&" + selector + "=true";
+      }
+
+      return $http.post('http://data.leafly.com/locations', params);
     }
+
   }
 });

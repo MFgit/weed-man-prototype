@@ -39,10 +39,10 @@
       </div>
       <button class="icon ion-navicon button button-clear extra" ng-click="toggleMenu()"></button>
       <ul ng-show="menuView" class="menu-list list">
-        <li class="item">deals</li>
-        <li class="item">strains</li>
-        <li class="item">specials</li>
-        <li class="item">veteran discounts</li>
+        <li class="item" ng-click="selector='deals';getRestriction()">deals</li>
+        <li class="item" ng-click="selector='strains';getRestriction()">strains</li>
+        <li class="item" ng-click="selector='specials';getRestriction()">specials</li>
+        <li class="item" ng-click="selector='veteranDiscount';getRestriction()">veteran discounts</li>
       </ul>
     </ion-header-bar>
 
