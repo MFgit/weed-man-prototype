@@ -68,7 +68,7 @@ angular.module('starter.controllers', [])
 
     $scope.map = map;
     
-    //$scope.centerOnMe
+    $scope.centerOnMe
 
     $scope.getDestribution();
   };
