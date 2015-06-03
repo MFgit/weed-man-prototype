@@ -91,7 +91,7 @@ angular.module('starter.controllers', [])
     $scope.menuView = !$scope.menuView;
   };
 
-  $scope.getRestriction = function () {
+  $scope.getDestribution = function () {
     $scope.menuView = false;
 
     clearMarkers($scope.markers);
