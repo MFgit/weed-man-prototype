@@ -60,6 +60,8 @@ angular.module('starter.controllers', [])
       infowindow.setContent('<div><strong>' + place.name + '</strong><br>' + address);
       infowindow.open(map, marker);
 
+      $scope.getDistribution();
+
       $scope.map = map;
     });
     /** End Autocomplete function on Google map location search */
@@ -71,7 +73,7 @@ angular.module('starter.controllers', [])
 
     $scope.selectedRegion = $scope.map.center;
 
-    $scope.getDestribution();
+    $scope.getDistribution();
   };
 
   $scope.centerOnMe = function () {
@@ -97,7 +99,7 @@ angular.module('starter.controllers', [])
     $scope.menuView = !$scope.menuView;
   };
 
-  $scope.getDestribution = function () {
+  $scope.getDistribution = function () {
     $scope.menuView = false;
 
     clearMarkers($scope.markers);
